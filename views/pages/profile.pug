@@ -1,0 +1,152 @@
+extends ../blocks/master
+block content
+  if authorised
+    .row(style="margin-bottom: 2rem;")
+      .col-md-1
+      .col-md-10
+        .row
+          .col-md-12
+            h1 Welcome back, #{user.name}!
+            p You have level <b>#{user.level}</b> permissions.
+            a(href="/profile/logout" style="color: #ffffff;").btn.btn-primary Logout
+        hr
+        .row(style="border: solid 1px black; padding: 1rem;")
+          .col-md-12
+            h2 Projects available to you (oldest to latest)
+            for project in projects
+              //- removed so only author can see, or admins
+              //- if user.level >= project.level || project.authors.includes(user.email) || user.level == 100
+              if project.authors.includes(user.email) && !project.finished
+                  hr
+                  h2= project.name
+                  h3= project.description
+                  p= project.authors
+
+                  .row
+                    .col-md-6
+                      form(action=`/profile/append/${project.id}`, method="POST")
+                        .mb-3
+                          input(type="email" name="newUserEmail" placeholder="Grant User Access (Email)" required)
+                        .mb-3
+                          input(type="submit" placeholder="Submit" required)
+                    .col-md-6
+                      if project.authors[0] != user.email
+                        a(href=`/profile/leaveProject/${project.id}`).btn.btn-primary Leave Project
+
+                  if project.authors[0] == user.email
+                    form(action=`/profile/removeUser/${project.id}`, method="POST")
+                      .mb-3
+                        input(type="email" name="removeUserEmail" placeholder="Remove User (Email)" required)
+                      .mb-3
+                        input(type="submit" placeholder="Submit" required)
+                  a(href=`https://sebmandal.com/profile/finish/${project.id}`) Finish Project
+                  if project.authors[0] == user.email
+                    br
+                    a(href=`https://sebmandal.com/profile/delete/${project.id}`) Delete Project
+            br
+            hr
+        br
+        .row(style="border: solid 1px black; padding: 1rem;")
+          .col-md-12
+            h2 Finished projects (oldest to latest)
+            for project in projects
+              //- removed so only author can see, or admins
+              //- if user.level >= project.level || project.authors.includes(user.email) || user.level == 100
+              if project.authors.includes(user.email) || user.level == 100
+                if project.level != 101 && project.finished
+                  hr
+                  h2= project.name
+                  h3= project.description
+                  p= project.authors
+
+                  .row
+                    .col-md-6
+                      form(action=`/profile/append/${project.id}`, method="POST")
+                        .mb-3
+                          input(type="email" name="newUserEmail" placeholder="Grant User Access (Email)" required)
+                        .mb-3
+                          input(type="submit" placeholder="Submit" required)
+                    .col-md-6
+                      if project.authors[0] != user.email
+                        a(href=`/profile/leaveProject/${project.id}`).btn.btn-primary Leave Project
+
+                  if project.authors[0] == user.email
+                    form(action=`/profile/removeUser/${project.id}`, method="POST")
+                      .mb-3
+                        input(type="email" name="removeUserEmail" placeholder="Remove User (Email)" required)
+                      .mb-3
+                        input(type="submit" placeholder="Submit" required)
+                  a(href=`https://sebmandal.com/profile/unfinish/${project.id}`) Unfinish Project
+                  if project.authors[0] == user.email
+                    br
+                    a(href=`https://sebmandal.com/profile/delete/${project.id}`) Delete Project
+            br
+            hr
+        br
+        //- .row
+        //-   .col-md-12
+        //-     if user.level == 100
+        //-       h2 Deleted projects
+        //-       for project in projects
+        //-         if project.level == 101
+        //-           div(style="border: solid 1px black; padding: 1rem;")
+        //-             h2= project.name
+        //-             h3= project.authorsBefore
+        //-             p= project.description
+        //-             a <b>Deleted.</b>
+        //- hr
+        if user.level == 100
+          .row(style="border: solid 1px black; padding: 1rem;")
+            .col-md-12
+              h2 Users in database
+              hr
+              for person in db.users
+                div
+                  p Name: <b>#{person.name}</b>
+                  p Email: <b>#{person.email}</b>
+                  p Permission Level: <b>#{person.level}</b>
+                  form(action=`/profile/changeLevel/${person.email}`, method="post")
+                    input(type="integer", name="newLevel", placeholder="New Permission Level")
+                    input(type="submit", value="Submit")
+                  br
+                  a(href=`https://sebmandal.com/profile/delete/${person.email}`) Remove person from database
+                  br
+                  hr
+                .col-md-6
+          hr
+        .row
+          .col-md-4
+          .col-md-4
+            h2 New Project
+            form(action="/profile/project", method="post")
+              .mb-3
+                input(type="text", name="projectname", placeholder="Project Name").form-control
+                label Your project's name.
+              .mb-3
+                input(type="text", name="projectdescription", placeholder="Content").form-control
+                label Describe your project/content.
+              //- .mb-3
+              //-   input(type="number", name="projectminlevel", placeholder="Project Level Requirement").form-control
+              //-   label Minimum requirement is level requirement. Needs to be between 0 and 100, 0 is public and 100 is private.
+              .mb-3
+                input(type="submit", value="Submit").form-control
+          .col-md-4
+          hr
+        //- .row
+        //-   .col-md-12
+        //-     a(href="/profile/delete" style="color: #ffffff;").btn.bg-dark Delete Profile
+  else
+    .text-center
+      h1 Login
+      .row
+        .col-md-4
+        .col-md-4
+          form(action="/profile", method="post")
+            .mb-3
+              input(type="email", name="email", placeholder="email").form-control
+            .mb-3
+              input(type="password", name="secret", placeholder="password").form-control
+            .mb-3
+              input(type="submit", value="Authorize").form-control
+        .col-md-4
+      a(href="/register") Register?

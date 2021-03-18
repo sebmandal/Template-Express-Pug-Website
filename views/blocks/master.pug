@@ -1,0 +1,40 @@
+doctype html
+html
+  head
+    title.
+      #{title}
+    link(rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous")
+  //- body.bg-dark.text-light(style="overflow-x: hidden;")
+  body(style="overflow-x: hidden; margin-top: 0;")
+    .p-5.text-center.bg-light.text-dark
+      .row
+        .col-md-1
+        .col-md-10
+          h1.mb-3 sebmandal.com
+        .col-md-1
+          //- a.btn.btn-primary(href="/profile" role="button") Login
+      br
+      if !authorised
+        .row 
+          .col-md-4
+          .col-md-1
+            a.btn(href="/" role="button") Home
+          .col-md-1
+            a.btn(href="/about" role="button") About
+          .col-md-1
+            a.btn(href="/profile" role="button") Profile
+          .col-md-1
+            a.btn(href="/register" role="button") Register
+          .col-md-4
+      else
+        .row 
+          .col-md-3
+          .col-md-2
+            a.btn(href="/" role="button") Home
+          .col-md-2
+            a.btn(href="/about" role="button") About
+          .col-md-2
+            a.btn(href="/profile" role="button") Profile
+          .col-md-3
+    br
+    block content
